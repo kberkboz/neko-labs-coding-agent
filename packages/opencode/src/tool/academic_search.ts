@@ -21,8 +21,11 @@ const TIMEOUT_MS = 25_000
 // free key helps most there). Read from the environment.
 const S2_KEY = process.env.SEMANTIC_SCHOLAR_API_KEY?.trim()
 const NCBI_KEY = process.env.NCBI_API_KEY?.trim()
-const CROSSREF_MAILTO = process.env.CROSSREF_MAILTO?.trim() || "research@neko.dev"
-const UA = `Neko-Code-Research/1.0 (mailto:${CROSSREF_MAILTO})`
+// Crossref's "polite pool" wants a contact email in the User-Agent. We don't
+// ship one; set CROSSREF_MAILTO in the environment to opt in. Without it we use
+// a plain User-Agent (the public pool still works).
+const CROSSREF_MAILTO = process.env.CROSSREF_MAILTO?.trim()
+const UA = CROSSREF_MAILTO ? `Neko-Code-Research/1.0 (mailto:${CROSSREF_MAILTO})` : "Neko-Code-Research/1.0"
 
 type Paper = {
   title: string
