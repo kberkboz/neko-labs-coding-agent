@@ -14,8 +14,15 @@ import { Effect, Schema } from "effect"
  */
 
 const MAX_RESULTS = 8
-const UA = "Neko-Code-Research/1.0 (mailto:research@neko.dev)"
 const TIMEOUT_MS = 25_000
+
+// Optional API keys. All four sources work without any key; a key only raises the
+// rate limit (Semantic Scholar's keyless pool is shared and frequently 429s, so a
+// free key helps most there). Read from the environment.
+const S2_KEY = process.env.SEMANTIC_SCHOLAR_API_KEY?.trim()
+const NCBI_KEY = process.env.NCBI_API_KEY?.trim()
+const CROSSREF_MAILTO = process.env.CROSSREF_MAILTO?.trim() || "research@neko.dev"
+const UA = `Neko-Code-Research/1.0 (mailto:${CROSSREF_MAILTO})`
 
 type Paper = {
   title: string
@@ -79,13 +86,14 @@ async function searchArxiv(query: string, max: number): Promise<Paper[]> {
 
 // ── PubMed (NCBI E-utilities: esearch + esummary JSON) ─────────────────────
 async function searchPubmed(query: string, max: number): Promise<Paper[]> {
+  const apiKey = NCBI_KEY ? `&api_key=${NCBI_KEY}` : ""
   const esearch = await getJson<any>(
-    `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmax=${max}&retmode=json&sort=relevance`,
+    `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmax=${max}&retmode=json&sort=relevance${apiKey}`,
   )
   const ids: string[] = esearch?.esearchresult?.idlist ?? []
   if (!ids.length) return []
   const summary = await getJson<any>(
-    `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${ids.join(",")}&retmode=json`,
+    `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${ids.join(",")}&retmode=json${apiKey}`,
   )
   const result = summary?.result ?? {}
   return (result.uids ?? []).map((uid: string) => {
@@ -107,6 +115,7 @@ async function searchSemanticScholar(query: string, max: number): Promise<Paper[
   const data = await getJson<any>(
     `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=${max}` +
       `&fields=title,authors,abstract,externalIds,openAccessPdf,year`,
+    S2_KEY ? { "x-api-key": S2_KEY } : {},
   )
   return (data?.data ?? []).map((p: any) => {
     const ext = p.externalIds ?? {}

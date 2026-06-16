@@ -21,10 +21,33 @@ Most coding agents are a single model doing everything. Neko runs a team. ARIA r
 - **Live kanban board.** Watch tasks move through Planning, Implementing, Peer Review, and Done, with the agents working each card.
 - **Collaborative implementation.** Two agents pair on hard changes, one writing and one critiquing, until they agree.
 - **Experiments.** Run the scientific method end to end, with peer review at every step.
-- **Academic search.** Pull real papers from arXiv, PubMed, Semantic Scholar, and Crossref. No API key needed.
+- **Academic search.** Pull real papers from arXiv, PubMed, Semantic Scholar, and Crossref. Works with no API key; optional free keys raise the rate limits.
 - **Bring your own models.** Major providers, free tiers, or fully local with Ollama. Set a different model per agent.
 
-## Quickstart
+## Install
+
+You need [git](https://git-scm.com) and a C/C++ toolchain for the native modules: Xcode Command Line Tools on macOS, `build-essential` on Linux, or Visual Studio Build Tools plus Python on Windows. The installer sets up [Bun](https://bun.sh) for you if it is missing.
+
+```sh
+git clone https://github.com/kberkboz/neko-labs-coding-agent
+cd neko-labs-coding-agent
+```
+
+macOS and Linux:
+
+```sh
+bash install.sh
+```
+
+Windows (PowerShell):
+
+```powershell
+./install.ps1
+```
+
+This installs the `neko` command. Open a new terminal afterward so it is on your PATH.
+
+## Usage
 
 Run it in any project:
 
@@ -33,8 +56,6 @@ neko
 ```
 
 Inside the app, type `/discuss`, `/board`, `/agents`, `/task`, or `/experiment` to reach the Neko features. Other entry points: `neko run -i`, `neko serve`, and `neko agent configure`.
-
-Configure models with `neko agent configure`, or edit `opencode.json`.
 
 ## Built on opencode
 
