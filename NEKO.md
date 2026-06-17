@@ -123,5 +123,3 @@ the discussion but still get a PR + peer review.
 Implemented and typechecking: roster, discuss, review, coimplement, experiment,
 academic_search, tasks, knowledge, the kanban board, and branding. Remaining:
 standalone Discuss/Experiment TUI surfaces and provider-onboarding polish.
-
-See `AGENTS.md` for upstream contributor conventions (they apply here too).
